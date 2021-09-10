@@ -1,0 +1,16 @@
+
+# temp ignore
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+
+
+# node ignore
+node_modules/
+cache/
+logs/
+package-lock.json
+yarn.lock
+

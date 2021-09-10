@@ -1,0 +1,12 @@
+{
+  "name": "cron-mini",
+  "version": "1.0.1",
+  "description": "一个可以在浏览器和node 环境下执行的定时任务插件",
+  "main": "./src/cronActuator.js",
+  "scripts": {
+    "test": ""
+  },
+  "author": "278773844@qq.com",
+  "license": "MIT",
+  "dependencies": {}
+}
