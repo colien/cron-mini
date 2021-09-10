@@ -8,5 +8,12 @@
   },
   "author": "278773844@qq.com",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/colien/cron-mini.git"
+  },
+  "keywords": [
+    "cron"
+  ]
 }
