@@ -10,10 +10,10 @@ function CronActuator(opts, cb){
   }
   this.opts = {};
   this.type; // 定时任务类型 1:纯 timeout/interval 定时；2: 纯cron 定时， 3:带 timeout 的 cron 定时
-  this.init(opts);
   this.timers = [];
   this.cb = cb;
-  this.wake = 3600000;  // 唤醒的间隔，以天为跨度
+  this.wake = opts.wake || 3600000;  // 唤醒的间隔，以天为跨度
+  this.init(opts);
 }
 
 CronActuator.prototype.init = function(opts){
@@ -47,12 +47,15 @@ CronActuator.prototype.start = function(){
 */
 CronActuator.prototype.createTimer = function(opts, type){
   var self = this;
-  var timer = new CustomTimer(opts, function(){ // type -> 1:没有延时，2：只有 timeout， 3: 带 timeout 的 interval
+  var timer = new CustomTimer(opts, function(){
     self.createNextTimer();
-    self.cancel(timer);
+    if(self.type != 1 ){
+      // 1 的是 timeout 和 interval 的，带有 interval 的不能删除，需要用户自己决定它何时停止
+      self.cancel(timer); 
+    }
     // 不含 cron 的定时和 cron 非延时定时器 才执行回调，
     if(opts.real){
-      self.cb();
+      self.cb(opts);
     }
   });
   this.timers.push(timer);
@@ -147,8 +150,8 @@ function calcNextTime(opts, maxTime){
     }
   }
   var time = new Date(nowDate.year + (month ? month[1] : 1), res[4]-1, res[3], res[2], res[1], res[0]);
-  console.log(nowDate.year + (month ? month[1] : 1), res[4]-1, res[3], res[2], res[1], res[0]);
-  console.log(time);
+  //console.log(nowDate.year + (month ? month[1] : 1), res[4]-1, res[3], res[2], res[1], res[0]);
+  //console.log(time);
   // 是一天内的
   if( weeks.times.indexOf(time.getDay()) > -1 && time.getTime() <= nextDay.date.getTime()){ 
     maxTime = time.getTime() - nowDate.date.getTime();

@@ -48,7 +48,7 @@ CustomTimer.prototype.start = function(){
         var timer2 = self.setInterval(function(){
           self.cb();
         }, opts.interval);
-        seif.interval = timer2;
+        self.interval = timer2;
         // 定时任务执行完了需要删除
       }, opts.timeout);
       self.timeout = timer;
