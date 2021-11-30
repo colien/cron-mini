@@ -31,6 +31,7 @@ CronActuator.prototype.init = function(opts){
       if( !opts.timeout ){  // 没有延时的 cron 当做纯cron
         this.type = 2;
       }
+      this.opts.interval = null; 
     }else{
       this.type = 1;
     }
@@ -49,10 +50,6 @@ CronActuator.prototype.createTimer = function(opts, type){
   var self = this;
   var timer = new CustomTimer(opts, function(){
     self.createNextTimer();
-    if(self.type != 1 ){
-      // 1 的是 timeout 和 interval 的，带有 interval 的不能删除，需要用户自己决定它何时停止
-      self.cancel(timer); 
-    }
     // 不含 cron 的定时和 cron 非延时定时器 才执行回调，
     if(opts.real){
       self.cb(opts);
@@ -69,11 +66,11 @@ CronActuator.prototype.createNextTimer = function(){
   }
   if(opts.timeEnum){
     var nextTime = calcNextTime(opts, self.wake);
-    console.log(nextTime);
+    //console.log(nextTime);
     var data = {
-      timeout : nextTime[0],
+      timeout : nextTime.timeLen,
       interval : 0,
-      real : nextTime[1],
+      real : nextTime.real,
     }
     this.createTimer(data, 2);
   }
@@ -140,30 +137,30 @@ function calcNextTime(opts, maxTime){
       if(arr[n] == "day"){
         // 天数是不准的，需要精确计算
         var max = getDaysInYearMonth(nowDate.year, nowDate.month).getDate();
-        var day = getTimeInArea(days, nowDate.day, max, (hour ? hour[1] : 1)); 
+        var day = getTimeInArea(days, nowDate.day, max + 1, (hour ? hour[1] : 1)); 
         res.push(day[0]);
       }
       if(arr[n] == "month"){
-        month = getTimeInArea(months, nowDate.month, 12, (day ? day[1] : 1));
+        month = getTimeInArea(months, nowDate.month, 13, (day ? day[1] : 1));
         res.push(month[0]);
       }
     }
   }
   var time = new Date(nowDate.year + (month ? month[1] : 1), res[4]-1, res[3], res[2], res[1], res[0]);
-  //console.log(nowDate.year + (month ? month[1] : 1), res[4]-1, res[3], res[2], res[1], res[0]);
   //console.log(time);
   // 是一天内的
-  if( weeks.times.indexOf(time.getDay()) > -1 && time.getTime() <= nextDay.date.getTime()){ 
-    maxTime = time.getTime() - nowDate.date.getTime();
+  var timeLen = time.getTime() <= nextDay.date.getTime();
+  if( weeks.times.indexOf(time.getDay()) > -1 && timeLen){ 
+    maxTime = timeLen;
     real = true;
     if(maxTime < 1000){
       setTimeout(function() {
-        maxTime = calcNextTime(opts, maxTime)[0];
+        maxTime = calcNextTime(opts, maxTime).timeLen;
       }, 1000);
     }
   }
   // 都是超过时间范围的，直接返回最大值
-  return [maxTime, real];
+  return { timeLen : maxTime, real : real} //[maxTime, real];
 }
 
 // 获取 时间区间
@@ -172,7 +169,7 @@ function getTimeInArea(opts, val, max, increase){
   var step = parseInt((val + increase) / max);
   var newVal = parseInt((val + increase) % max);
   for(var i = 0; i < times.length; i++){
-    if(times[i] >= newVal){
+    if(times[i] >= newVal && newVal < max){ // 后面这个判断主要是因为月份是动态的，比如 2 月最多只有 29天，枚举里面却可以有 31 天
       return [times[i], step];
     }
   }
@@ -187,7 +184,7 @@ https://www.cnblogs.com/yanghj010/p/10875151.html
 
 不受支持的 Cron 功能
 目前，不支持W（最近的工作日）和L（每月/每周的最后一天）， 包括#（每月的第 n 个工作日）。
-? L W C #
+L W C #
 流行的 cron 实现支持的大多数其他功能应该可以正常工作.
 
 字段	允许值	允许的特殊字符

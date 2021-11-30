@@ -41,26 +41,38 @@ CustomTimer.prototype.clearTimeout = function(){
 CustomTimer.prototype.start = function(){
   var self = this;
   var opts = this.opts;
-  // 普通的定时任务
-  if(opts.timeout){
+  // 有 timeout 的定时任务 type [1,2,3]
+  if(opts.timeout){ 
+    // type [1] 的定时任务才会进来
     if(opts.interval){
-      var timer = setTimeout(function(){
+      self.timeout = setTimeout(function(){
         var timer2 = self.setInterval(function(){
           self.cb();
         }, opts.interval);
         self.interval = timer2;
+        if(opts.immedi){
+          self.cb();
+        }
         // 定时任务执行完了需要删除
+        self.clearTimeout();
       }, opts.timeout);
-      self.timeout = timer;
     }else{
-      var timer = self.setTimeout(function(){
+      self.timeout = self.setTimeout(function(){
         self.cb();
+        self.clearTimeout();
       }, opts.timeout);
-      self.timeout = timer;
     }
-  }else{
-    self.cb();
+    return;
   }
+  // 普通的 interval 定时 type [1]
+  if(opts.interval){
+    var timer2 = self.setInterval(function(){
+      self.cb();
+    }, opts.interval);
+    self.interval = timer2;
+    return;
+  }
+  self.cb();
 }
 
 exports.CustomTimer = CustomTimer;
