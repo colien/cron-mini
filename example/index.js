@@ -5,8 +5,8 @@ var test = new CronActuator({
   timeout : 5000,
   name : "qunar 定时任务",
   status : "start",
-}, function(){
-  console.log(new Date());
+}, function(opts){
+  console.log(1, new Date());
 });
 
 test.start();

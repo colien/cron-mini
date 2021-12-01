@@ -45,11 +45,10 @@ CustomTimer.prototype.start = function(){
   if(opts.timeout){ 
     // type [1] 的定时任务才会进来
     if(opts.interval){
-      self.timeout = setTimeout(function(){
-        var timer2 = self.setInterval(function(){
+      self.setTimeout(function(){
+        self.setInterval(function(){
           self.cb();
         }, opts.interval);
-        self.interval = timer2;
         if(opts.immedi){
           self.cb();
         }
@@ -57,7 +56,7 @@ CustomTimer.prototype.start = function(){
         self.clearTimeout();
       }, opts.timeout);
     }else{
-      self.timeout = self.setTimeout(function(){
+      self.setTimeout(function(){
         self.cb();
         self.clearTimeout();
       }, opts.timeout);
@@ -66,10 +65,9 @@ CustomTimer.prototype.start = function(){
   }
   // 普通的 interval 定时 type [1]
   if(opts.interval){
-    var timer2 = self.setInterval(function(){
+    self.setInterval(function(){
       self.cb();
     }, opts.interval);
-    self.interval = timer2;
     return;
   }
   self.cb();

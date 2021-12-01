@@ -149,15 +149,16 @@ function calcNextTime(opts, maxTime){
   var time = new Date(nowDate.year + (month ? month[1] : 1), res[4]-1, res[3], res[2], res[1], res[0]);
   //console.log(time);
   // 是一天内的
-  var timeLen = time.getTime() <= nextDay.date.getTime();
-  if( weeks.times.indexOf(time.getDay()) > -1 && timeLen){ 
-    maxTime = timeLen;
+  var validTime = time.getTime() <= nextDay.date.getTime();
+  if( weeks.times.indexOf(time.getDay()) > -1 && validTime){ 
+    maxTime = time.getTime() - nowDate.date.getTime();
     real = true;
-    if(maxTime < 1000){
+    /* if(maxTime < 1000){
       setTimeout(function() {
         maxTime = calcNextTime(opts, maxTime).timeLen;
       }, 1000);
-    }
+    } */
+    
   }
   // 都是超过时间范围的，直接返回最大值
   return { timeLen : maxTime, real : real} //[maxTime, real];
