@@ -2,9 +2,9 @@
   "name": "cron-mini",
   "version": "1.0.3",
   "description": "一个可以在浏览器和node 环境下执行的定时任务插件",
-  "main": "./src/cronActuator.js",
+  "main": "./dist/cron-mini.min.js",
   "scripts": {
-    "test": ""
+    "build": "cross-env NODE_ENV=production webpack --progress"
   },
   "author": "278773844@qq.com",
   "license": "MIT",
@@ -15,5 +15,14 @@
   },
   "keywords": [
     "cron"
-  ]
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/plugin-transform-object-assign": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "babel-loader": "^8.2.3",
+    "cross-env": "^7.0.3",
+    "webpack": "^5.64.4",
+    "webpack-cli": "^4.9.1"
+  }
 }
