@@ -1,4 +1,4 @@
-var { CronActuator } = require("../src/cronActuator.js");
+var CronActuator = CronMini.CronActuator;
 
 var test = new CronActuator({
   cron : "0-10 * 8-23 1-2,7,8 * ?",
