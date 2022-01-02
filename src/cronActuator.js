@@ -150,7 +150,7 @@ function calcNextTime(opts, maxTime){
   //console.log(time);
   // 是一天内的
   var validTime = time.getTime() <= nextDay.date.getTime();
-  if( weeks.times.indexOf(time.getDay()) > -1 && validTime){ 
+  if( weeks.times.indexOf(time.getDay() || 7) > -1 && validTime){ 
     maxTime = time.getTime() - nowDate.date.getTime();
     real = true;
     /* if(maxTime < 1000){

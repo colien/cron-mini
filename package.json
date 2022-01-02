@@ -1,10 +1,11 @@
 {
   "name": "cron-mini",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "一个可以在浏览器和node 环境下执行的定时任务插件",
   "main": "./dist/cron-mini.min.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --progress"
+    "build": "cross-env NODE_ENV=production webpack --progress",
+    "dev": "cross-env NODE_ENV=development webpack --progress"
   },
   "author": "278773844@qq.com",
   "license": "MIT",

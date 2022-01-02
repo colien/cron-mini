@@ -1,7 +1,7 @@
 var CronActuator = CronMini.CronActuator;
 
 var test = new CronActuator({
-  cron : "0-10 * 8-23 1-2,7,8 * ?",
+  cron : "0 0/2 * * * ?",
   timeout : 5000,
   name : "qunar 定时任务",
   status : "start",
@@ -42,12 +42,9 @@ test.start();
 
 
 
-  不带 cron 的
-  timeout 
-  interval
 
-  带 cron
-  timeout
-
-
+  升级
+  1. 添加定时器的状态，这一可以实时知道定时器是开启状态还是停止状态 run stop
+  2. 修改定时器时间的封装
+  
 */

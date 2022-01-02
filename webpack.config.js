@@ -1,5 +1,7 @@
 var path = require("path");
 
+var env = process.env.NODE_ENV;
+
 module.exports = {
   entry: "./src/cronActuator.js",
   output: {
@@ -9,8 +11,8 @@ module.exports = {
     libraryTarget: "umd",
     globalObject: "self",
   },
-  mode: "production",
-  devtool: "source-map",
+  mode: env == "production" ? "production" : "development",
+  //devtool: env == "production" ? "none" : "source-map",
   module: {
     rules: [
       {
