@@ -4,6 +4,9 @@
     interval : x
   }
 */
+
+const { getUUId } = require("./utils.js");
+
 function CustomTimer(opts, cb){
   if(!(this instanceof CustomTimer)){
     return new CustomTimer(opts);
@@ -12,15 +15,19 @@ function CustomTimer(opts, cb){
   this.interval = null;
   this.opts = opts;
   this.cb = cb;
+  this.id = getUUId();
+  this.status = false;
 }
 
 CustomTimer.prototype.setTimeout = function (fn, time){
+  this.status = true;
   this.timeout = setTimeout(function(){
     fn();
   }, time);
   return this.timeout;
 }
 CustomTimer.prototype.setInterval = function (fn, time){
+  this.status = true;
   this.interval = setInterval(function (){
     fn();
   }, time);
@@ -33,10 +40,16 @@ CustomTimer.prototype.clear = function(){
 CustomTimer.prototype.clearInterval = function(){
   clearInterval(this.interval);
   this.interval = null;
+  if(!this.interval && !this.timeout){
+    this.status = false;
+  }
 }
 CustomTimer.prototype.clearTimeout = function(){
   clearTimeout(this.timeout);
   this.timeout = null;
+  if(!this.interval && !this.timeout){
+    this.status = false;
+  }
 }
 CustomTimer.prototype.start = function(){
   var self = this;
@@ -46,19 +59,20 @@ CustomTimer.prototype.start = function(){
     // type [1] 的定时任务才会进来
     if(opts.interval){
       self.setTimeout(function(){
+        // 定时任务执行完了需要删除
+        // 顺序很重要，它决定了 定时器的 status 的状态
+        self.clearTimeout();
         self.setInterval(function(){
           self.cb();
         }, opts.interval);
         if(opts.immedi){
           self.cb();
         }
-        // 定时任务执行完了需要删除
-        self.clearTimeout();
       }, opts.timeout);
     }else{
       self.setTimeout(function(){
-        self.cb();
         self.clearTimeout();
+        self.cb();
       }, opts.timeout);
     }
     return;

@@ -41,7 +41,13 @@ CronActuator.prototype.init = function(opts){
 CronActuator.prototype.start = function(){
   // 是否是真实的回调，考虑到cron 的时候，需要延时，还有唤醒定时任务的定时任务
   this.opts.real = this.type === 1; 
-  this.createTimer(this.opts, 1);
+  this.createTimer({
+    timeout : this.opts.timeout,
+    interval : this.opts.interval,
+    real : this.opts.real,
+    immedi : this.opts.immedi,
+    targetTime : "", 
+  }, 1);
 }
 /** 
  * type : 常见类型 1： 原始参数创建；2：通过计算创建
@@ -50,6 +56,9 @@ CronActuator.prototype.createTimer = function(opts, type){
   var self = this;
   var timer = new CustomTimer(opts, function(){
     self.createNextTimer();
+    if(!timer.status){
+      self.cancel(timer);
+    }
     // 不含 cron 的定时和 cron 非延时定时器 才执行回调，
     if(opts.real){
       self.cb(opts);
@@ -66,11 +75,11 @@ CronActuator.prototype.createNextTimer = function(){
   }
   if(opts.timeEnum){
     var nextTime = calcNextTime(opts, self.wake);
-    //console.log(nextTime);
     var data = {
       timeout : nextTime.timeLen,
       interval : 0,
       real : nextTime.real,
+      targetTime : nextTime.targetTime,
     }
     this.createTimer(data, 2);
   }
@@ -83,14 +92,19 @@ CronActuator.prototype.stop = CronActuator.prototype.clearAll = function(){
       this.cancel(timer);
     }
   }
+  this.timers = [];
 }
 CronActuator.prototype.cancel = function(timer, cb){
   if(timer){
     var timers = this.timers;
-    var idx = timers.indexOf(timer);
-    idx >= 0 && timers.splice(idx, 1);
-    timer && timer.clear();
+    for(var i = 0; i < timers.length; i++){
+      if(timers[i].id === timer.id){
+        timers.splice(i, 1)[0].clear();
+        timer && timer.clear();
+      }
+    }
   }
+  cb && cb();
 }
 
 // 计算下一个定时任务的时间
@@ -147,21 +161,14 @@ function calcNextTime(opts, maxTime){
     }
   }
   var time = new Date(nowDate.year + (month ? month[1] : 1), res[4]-1, res[3], res[2], res[1], res[0]);
-  //console.log(time);
   // 是一天内的
   var validTime = time.getTime() <= nextDay.date.getTime();
   if( weeks.times.indexOf(time.getDay() || 7) > -1 && validTime){ 
     maxTime = time.getTime() - nowDate.date.getTime();
     real = true;
-    /* if(maxTime < 1000){
-      setTimeout(function() {
-        maxTime = calcNextTime(opts, maxTime).timeLen;
-      }, 1000);
-    } */
-    
   }
   // 都是超过时间范围的，直接返回最大值
-  return { timeLen : maxTime, real : real} //[maxTime, real];
+  return { timeLen : maxTime, real : real, targetTime : time} //[maxTime, real];
 }
 
 // 获取 时间区间
