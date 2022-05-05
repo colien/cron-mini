@@ -1,0 +1,10 @@
+*.DS_Store*
+*.log
+*.orig
+.git
+
+node_modules/
+example/
+src/
+webpack.config.js
+package-lock.json
