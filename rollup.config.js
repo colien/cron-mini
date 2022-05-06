@@ -17,7 +17,8 @@ export default {
   output: {
     file: 'dist/cron-mini.min.js',
     format: 'umd',
-    name: 'CronMini'
+    name: 'CronMini',
+    exports: 'named'
   }
 }
 
