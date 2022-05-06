@@ -1,7 +1,7 @@
 var CronActuator = CronMini.CronActuator;
 
 var test = new CronActuator({
-  cron : "0 0/2 * * * ?",
+  cron : "0 0/1 * * * ?",
   timeout : 5000,
   name : "qunar 定时任务",
   status : "start",
