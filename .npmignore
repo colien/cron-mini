@@ -6,5 +6,7 @@
 node_modules/
 example/
 src/
-webpack.config.js
+babel.config.js
+rollup.config.js
 package-lock.json
+.eslintrc.js
